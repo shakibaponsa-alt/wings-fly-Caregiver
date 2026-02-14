@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wings Fly Caregiver Academy - Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon">
+                <img src="logo.jpeg" alt="Wings Fly Logo"
+                    style="width: 48px; height: 48px; object-fit: contain; border-radius: 50%;"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <i class="fas fa-graduation-cap" style="display: none;"></i>
+            </div>
+            <div class="logo-text">
+                <h1>Wings Fly</h1>
+                <p>Caregiver Academy</p>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" data-page="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-page="students">
+                <i class="fas fa-user-graduate"></i>
+                <span>Students</span>
+            </a>
+            <a href="#" class="nav-item" data-page="finance">
+                <i class="fas fa-wallet"></i>
+                <span>Finance</span>
+            </a>
+            <a href="#" class="nav-item" data-page="accounts">
+                <i class="fas fa-university"></i>
+                <span>Accounts</span>
+            </a>
+            <a href="#" class="nav-item" data-page="loans">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>Loans</span>
+            </a>
+            <a href="#" class="nav-item" data-page="visitors">
+                <i class="fas fa-users"></i>
+                <span>Visitors</span>
+            </a>
+            <a href="#" class="nav-item" data-page="hr-staff">
+                <i class="fas fa-user-tie"></i>
+                <span>HR/Staff</span>
+            </a>
+            <a href="#" class="nav-item" data-page="exams">
+                <i class="fas fa-clipboard-check"></i>
+                <span>Exams</span>
+            </a>
+            <a href="#" class="nav-item" data-page="attendance">
+                <i class="fas fa-calendar-check"></i>
+                <span>Attendance</span>
+            </a>
+            <a href="#" class="nav-item" data-page="id-cards">
+                <i class="fas fa-id-card"></i>
+                <span>ID Cards</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="welcome-text">
+                    <h2>Welcome back, Admin!</h2>
+                    <p id="currentDate"></p>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="globalSearch" placeholder="Search students, transactions, courses...">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-primary" id="addNewBtn">
+                    <i class="fas fa-plus"></i> ADD NEW
+                </button>
+                <button class="icon-btn" id="cloudSyncBtn" title="Sync with Google Sheets">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </button>
+                <button class="icon-btn" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=00D9FF&color=fff" alt="Admin">
+                    <span>Admin User</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content Area -->
+        <div class="page-container" id="pageContainer">
+            <!-- Dashboard Page (Default) -->
+            <div class="page-content active" id="dashboard-page">
+                <!-- Dashboard content will be loaded here -->
+            </div>
+
+            <!-- Students Page -->
+            <div class="page-content" id="students-page">
+                <!-- Students content will be loaded here -->
+            </div>
+
+            <!-- Finance Page -->
+            <div class="page-content" id="finance-page">
+                <!-- Finance content will be loaded here -->
+            </div>
+
+            <!-- Accounts Page -->
+            <div class="page-content" id="accounts-page">
+                <!-- Accounts content will be loaded here -->
+            </div>
+
+            <!-- Other pages -->
+            <div class="page-content" id="loans-page">
+                <div class="coming-soon">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <h2>Loans Module</h2>
+                    <p>Coming Soon...</p>
+                </div>
+            </div>
+
+            <div class="page-content" id="visitors-page">
+                <div class="coming-soon">
+                    <i class="fas fa-users"></i>
+                    <h2>Visitors Module</h2>
+                    <p>Coming Soon...</p>
+                </div>
+            </div>
+
+            <div class="page-content" id="hr-staff-page">
+                <div class="coming-soon">
+                    <i class="fas fa-user-tie"></i>
+                    <h2>HR/Staff Module</h2>
+                    <p>Coming Soon...</p>
+                </div>
+            </div>
+
+            <div class="page-content" id="exams-page">
+                <div class="coming-soon">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h2>Exams Module</h2>
+                    <p>Coming Soon...</p>
+                </div>
+            </div>
+
+            <div class="page-content" id="attendance-page">
+                <div class="coming-soon">
+                    <i class="fas fa-calendar-check"></i>
+                    <h2>Attendance Module</h2>
+                    <p>Coming Soon...</p>
+                </div>
+            </div>
+
+            <div class="page-content" id="id-cards-page">
+                <div class="coming-soon">
+                    <i class="fas fa-id-card"></i>
+                    <h2>ID Cards Module</h2>
+                    <p>Coming Soon...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Add Student Modal -->
+    <div class="modal" id="addStudentModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Add New Student</h2>
+                <button class="modal-close" data-modal="addStudentModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addStudentForm">
+                    <!-- Form will be populated by JavaScript -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Student Modal -->
+    <div class="modal" id="viewStudentModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> Student Profile</h2>
+                <button class="modal-close" data-modal="viewStudentModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="studentProfileContent">
+                <!-- Student profile will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div class="modal" id="addTransactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add Transaction</h2>
+                <button class="modal-close" data-modal="addTransactionModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addTransactionForm">
+                    <!-- Form will be populated by JavaScript -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="students.js"></script>
+    <script src="finance.js"></script>
+    <script src="data-importer.js"></script>
+</body>
+
+</html>
