@@ -8,8 +8,13 @@ async function importCSVData() {
         showLoading();
         console.log('Starting CSV import...');
 
-        // Fetch the CSV file
+        // Try to fetch the CSV file
         const response = await fetch('Copy of Fainal Wings Fly Caregiver (web app) - Form Responses 1.csv');
+
+        if (!response.ok) {
+            throw new Error('CSV file not found');
+        }
+
         const csvText = await response.text();
 
         // Parse CSV
@@ -29,9 +34,9 @@ async function importCSVData() {
         return students;
     } catch (error) {
         console.error('Error importing CSV:', error);
-        showToast('Error importing data. Using sample data instead.', 'warning');
+        console.log('Loading sample data instead...');
 
-        // Load sample data instead
+        // Load sample data instead (for deployment)
         loadSampleData();
         hideLoading();
     }
@@ -264,10 +269,20 @@ function initializeSampleTransactions() {
 
 function loadSampleData() {
     // Load sample student data if CSV import fails
+    const courses = [
+        'Caregiving for Toddler And Children',
+        'Primary Health Care Level 2',
+        'Caregiving for Elderly Person Level 3',
+        'Dementia Caregiver Level 3',
+        'Caregiving for Special Need'
+    ];
+
+    const districts = ['Dhaka', 'Chittagong', 'Khulna', 'Rajshahi', 'Sylhet', 'Barisal', 'Rangpur', 'Mymensingh', 'Jashore', 'Comilla'];
+
     AppState.students = [
         {
             id: generateId(),
-            registrationDate: '2026-01-27',
+            registrationDate: '2026-01-27T00:00:00Z',
             nameBangla: 'সুমাইয়া বিনতী রায়হান মাইশা',
             nameEnglish: 'Sumaiya Binti Raihan Maisha',
             fatherNameEnglish: 'Raihan Habib',
@@ -275,13 +290,17 @@ function loadSampleData() {
             mobile: '01794522502',
             email: 'sumaiyaraihanofficial@gmail.com',
             district: 'Dhaka',
-            course: 'Caregiving for Toddler And Children',
+            division: 'Dhaka',
+            nid: '1234567890',
+            course: courses[0],
             status: 'Active',
-            enrollmentDate: '2026-01-27'
+            enrollmentDate: '2026-01-27T00:00:00Z',
+            certificateSubmission: 'No',
+            bankDetails: 'BRAC Bank - 01794522502'
         },
         {
             id: generateId(),
-            registrationDate: '2026-01-28',
+            registrationDate: '2026-01-28T00:00:00Z',
             nameBangla: 'সুইটি শিলা',
             nameEnglish: 'Sweety Shila',
             fatherNameEnglish: 'Shahidul Islam',
@@ -289,14 +308,120 @@ function loadSampleData() {
             mobile: '01308556509',
             email: 'iamsweetyshila@gmail.com',
             district: 'Jashore',
-            course: 'Primary Health Care Level 2',
+            division: 'Khulna',
+            course: courses[1],
             status: 'Active',
-            enrollmentDate: '2026-01-28'
+            enrollmentDate: '2026-01-28T00:00:00Z',
+            certificateSubmission: 'Yes',
+            bankDetails: 'bKash - 01308556509'
+        },
+        {
+            id: generateId(),
+            registrationDate: '2026-02-01T00:00:00Z',
+            nameBangla: 'আনিসা খাতুন',
+            nameEnglish: 'Anisa Khatun',
+            fatherNameEnglish: 'Abdul Karim',
+            motherNameEnglish: 'Rahima Begum',
+            mobile: '01712345678',
+            email: 'anisa.khatun@example.com',
+            district: 'Chittagong',
+            division: 'Chittagong',
+            course: courses[2],
+            status: 'Active',
+            enrollmentDate: '2026-02-01T00:00:00Z',
+            certificateSubmission: 'No',
+            bankDetails: 'Dutch Bangla Bank'
+        },
+        {
+            id: generateId(),
+            registrationDate: '2026-02-03T00:00:00Z',
+            nameBangla: 'রিনা আক্তার',
+            nameEnglish: 'Rina Akter',
+            fatherNameEnglish: 'Mohammad Ali',
+            motherNameEnglish: 'Sultana Begum',
+            mobile: '01823456789',
+            email: 'rina.akter@gmail.com',
+            district: 'Sylhet',
+            division: 'Sylhet',
+            course: courses[3],
+            status: 'Active',
+            enrollmentDate: '2026-02-03T00:00:00Z',
+            certificateSubmission: 'No',
+            bankDetails: 'Nagad - 01823456789'
+        },
+        {
+            id: generateId(),
+            registrationDate: '2026-02-05T00:00:00Z',
+            nameBangla: 'ফাতেমা বেগম',
+            nameEnglish: 'Fatema Begum',
+            fatherNameEnglish: 'Azizul Haque',
+            motherNameEnglish: 'Amina Khatun',
+            mobile: '01934567890',
+            email: 'fatema.begum@yahoo.com',
+            district: 'Khulna',
+            division: 'Khulna',
+            course: courses[1],
+            status: 'Completed',
+            enrollmentDate: '2026-02-05T00:00:00Z',
+            certificateSubmission: 'Yes',
+            bankDetails: 'Islami Bank Bangladesh'
+        },
+        {
+            id: generateId(),
+            registrationDate: '2026-02-08T00:00:00Z',
+            nameBangla: 'সাবিনা ইয়াসমিন',
+            nameEnglish: 'Sabina Yasmin',
+            fatherNameEnglish: 'Nurul Islam',
+            motherNameEnglish: 'Nasrin Akter',
+            mobile: '01645678901',
+            email: 'sabina.yasmin@example.com',
+            district: 'Rajshahi',
+            division: 'Rajshahi',
+            course: courses[4],
+            status: 'Active',
+            enrollmentDate: '2026-02-08T00:00:00Z',
+            certificateSubmission: 'No',
+            bankDetails: 'City Bank'
+        },
+        {
+            id: generateId(),
+            registrationDate: '2026-02-10T00:00:00Z',
+            nameBangla: 'নাজমা আক্তার',
+            nameEnglish: 'Nazma Akter',
+            fatherNameEnglish: 'Hafizur Rahman',
+            motherNameEnglish: 'Razia Sultana',
+            mobile: '01756789012',
+            email: 'nazma.akter@gmail.com',
+            district: 'Dhaka',
+            division: 'Dhaka',
+            course: courses[0],
+            status: 'Active',
+            enrollmentDate: '2026-02-10T00:00:00Z',
+            certificateSubmission: 'No',
+            bankDetails: 'bKash - 01756789012'
+        },
+        {
+            id: generateId(),
+            registrationDate: '2026-02-12T00:00:00Z',
+            nameBangla: 'শাহানা পারভীন',
+            nameEnglish: 'Shahana Parvin',
+            fatherNameEnglish: 'Shahjahan Ali',
+            motherNameEnglish: 'Monira Begum',
+            mobile: '01867890123',
+            email: 'shahana.parvin@example.com',
+            district: 'Comilla',
+            division: 'Chittagong',
+            course: courses[2],
+            status: 'Active',
+            enrollmentDate: '2026-02-12T00:00:00Z',
+            certificateSubmission: 'Yes',
+            bankDetails: 'Sonali Bank'
         }
     ];
 
     initializeFinanceData(AppState.students);
     saveDataToStorage();
+    console.log(`Loaded ${AppState.students.length} sample students`);
 }
 
 // Auto-import on first load

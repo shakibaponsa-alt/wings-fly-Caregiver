@@ -72,6 +72,10 @@
                 <i class="fas fa-id-card"></i>
                 <span>ID Cards</span>
             </a>
+            <a href="#" class="nav-item" data-page="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
         </nav>
     </aside>
 
@@ -135,20 +139,75 @@
                 <!-- Accounts content will be loaded here -->
             </div>
 
-            <!-- Other pages -->
+            <!-- Loans Page -->
             <div class="page-content" id="loans-page">
-                <div class="coming-soon">
-                    <i class="fas fa-hand-holding-usd"></i>
-                    <h2>Loans Module</h2>
-                    <p>Coming Soon...</p>
-                </div>
+                <!-- Loans content will be loaded here by loans.js -->
             </div>
 
+            <!-- Visitors Page -->
             <div class="page-content" id="visitors-page">
-                <div class="coming-soon">
-                    <i class="fas fa-users"></i>
-                    <h2>Visitors Module</h2>
-                    <p>Coming Soon...</p>
+                <div class="visitors-container">
+                    <!-- Page Header -->
+                    <div class="flex-between mb-2">
+                        <div>
+                            <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 4px;"><i
+                                    class="fas fa-user-friends"></i> Visitor Management</h1>
+                            <p style="color: var(--text-muted);">Track and manage site visitors and potential leads</p>
+                        </div>
+                        <button class="btn-primary" onclick="openVisitorModal()">
+                            <i class="fas fa-user-plus"></i> ADD NEW VISITOR
+                        </button>
+                    </div>
+
+                    <!-- Filter Bar -->
+                    <div class="card mb-2" style="padding: 15px;">
+                        <div
+                            style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: var(--spacing-sm); align-items: end;">
+                            <div class="form-group mb-0">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">Search</label>
+                                <div style="position: relative;">
+                                    <i class="fas fa-search"
+                                        style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                                    <input type="text" id="visitorSearch" class="form-input" style="padding-left: 35px;"
+                                        placeholder="Search by name or phone..." onkeyup="applyVisitorFilters()">
+                                </div>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">From Date</label>
+                                <input type="date" id="visitorFromDate" class="form-input"
+                                    onchange="applyVisitorFilters()">
+                            </div>
+                            <div class="form-group mb-0">
+                                <label style="font-size: 0.75rem; margin-bottom: 4px;">To Date</label>
+                                <input type="date" id="visitorToDate" class="form-input"
+                                    onchange="applyVisitorFilters()">
+                            </div>
+                            <button class="btn-secondary" onclick="resetVisitorFilters()" style="padding: 10px 20px;">
+                                RESET
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visitors Table -->
+                    <div class="card">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>DATE</th>
+                                        <th>NAME</th>
+                                        <th>PHONE</th>
+                                        <th>INTERESTED COURSE</th>
+                                        <th>REMARKS</th>
+                                        <th>ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="visitorsTableBody">
+                                    <!-- Loaded by visitors.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -182,6 +241,11 @@
                     <h2>ID Cards Module</h2>
                     <p>Coming Soon...</p>
                 </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings-page" class="page-content">
+                <!-- Settings content will be loaded here -->
             </div>
         </div>
     </main>
@@ -236,6 +300,117 @@
         </div>
     </div>
 
+    <!-- Account Modal -->
+    <div class="modal" id="accountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="accountModalTitle"><i class="fas fa-university"></i> Add New Account</h2>
+                <button class="modal-close" data-modal="accountModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="accountForm">
+                    <!-- Form will be populated by JavaScript -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Loan Modal -->
+    <div class="modal" id="addLoanModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-hand-holding-usd"></i> Add Loan Transaction</h2>
+                <button class="modal-close" data-modal="addLoanModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addLoanForm">
+                    <!-- Form will be populated by JavaScript -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Loan Ledger Modal -->
+    <div class="modal" id="viewLoanLedgerModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="loanLedgerTitle"><i class="fas fa-book"></i> Loan Ledger</h2>
+                <button class="modal-close" data-modal="viewLoanLedgerModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="loanLedgerContent">
+                <!-- Ledger content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div class="modal" id="transferModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exchange-alt"></i> Transfer Balance</h2>
+                <button class="modal-close" data-modal="transferModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="transferForm">
+                    <!-- Form will be populated by JavaScript -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Visitor Modal -->
+    <div class="modal" id="visitorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-edit"></i> <span id="visitorModalTitle">Visitor Information</span></h2>
+                <button class="close-modal" onclick="closeModal('visitorModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="visitorForm">
+                    <input type="hidden" id="visitorId">
+                    <div class="form-group">
+                        <label>VISITOR NAME</label>
+                        <input type="text" id="visitorName" class="form-input" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>PHONE NUMBER</label>
+                        <input type="text" id="visitorPhone" class="form-input" placeholder="e.g., 017xxxxxxxx"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label>INTERESTED COURSE</label>
+                        <select id="visitorCourse" class="form-select" required>
+                            <option value="">Select Interested Course...</option>
+                            <!-- Options populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>VISITING DATE</label>
+                        <input type="date" id="visitorDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>REMARKS / FOLLOW-UP DETAILS</label>
+                        <textarea id="visitorRemarks" class="form-input" rows="4"
+                            placeholder="Any specific notes..."></textarea>
+                    </div>
+                    <div class="modal-footer" style="padding: 0; margin-top: 20px;">
+                        <button type="submit" class="btn-primary" style="width: 100%;">SAVE VISITOR INFORMATION</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
@@ -250,6 +425,9 @@
     <script src="dashboard.js"></script>
     <script src="students.js"></script>
     <script src="finance.js"></script>
+    <script src="loans.js"></script>
+    <script src="visitors.js"></script>
+    <script src="settings.js"></script>
     <script src="data-importer.js"></script>
 </body>
 

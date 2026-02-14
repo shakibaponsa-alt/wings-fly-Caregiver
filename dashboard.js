@@ -32,9 +32,14 @@ function loadDashboard() {
                         <input type="date" class="form-input" style="width: 140px;" id="targetFromDate" value="${getFirstDayOfMonth()}">
                         <span style="color: var(--text-muted); padding: 0 8px;">to</span>
                         <input type="date" class="form-input" style="width: 140px;" id="targetToDate" value="${getTodayDate()}">
-                        <button class="btn-primary" style="padding: 8px 16px;">
-                            <i class="fas fa-sync"></i> 3M
-                        </button>
+                        <div style="display: flex; gap: var(--spacing-xs); margin-left: 8px;">
+                            <button class="btn-secondary" onclick="exportDashboardPDF()" title="Download PDF Report">
+                                <i class="fas fa-file-pdf"></i>
+                            </button>
+                            <button class="btn-secondary" onclick="exportToCSV()" title="Download All Data (Excel)">
+                                <i class="fas fa-file-excel"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div style="padding: var(--spacing-md) 0;">
@@ -91,12 +96,10 @@ function loadDashboard() {
                         Quick Actions
                     </h3>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); padding-top: var(--spacing-md);">
                     ${renderQuickAction('fa-user-plus', 'Add Student', 'addStudentModal')}
-                    ${renderQuickAction('fa-file-export', 'Export Data', 'export')}
-                    ${renderQuickAction('fa-cloud-upload-alt', 'Sync to Cloud', 'sync')}
+                    ${renderQuickAction('fa-cog', 'System Settings', 'settings')}
+                    ${renderQuickAction('fa-file-excel', 'Export All Data', 'export')}
                     ${renderQuickAction('fa-chart-bar', 'View Reports', 'reports')}
-                </div>
             </div>
         </div>
     `;
@@ -274,8 +277,8 @@ function handleQuickAction(action) {
         case 'export':
             exportToCSV();
             break;
-        case 'sync':
-            handleCloudSync();
+        case 'settings':
+            navigateToPage('settings');
             break;
         case 'reports':
             showToast('Reports feature coming soon!', 'info');
@@ -293,15 +296,6 @@ function viewStudent(id) {
     openModal('viewStudentModal');
 }
 
-// Utility functions for dates
-function getTodayDate() {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-}
-
-function getFirstDayOfMonth() {
-    const today = new Date();
-    return new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-}
+// Utility functions for dates are now in app.js
 
 console.log('Dashboard Module Loaded');

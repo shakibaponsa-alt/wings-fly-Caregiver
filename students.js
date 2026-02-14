@@ -31,16 +31,34 @@ function loadStudentsPage() {
                             <input type="text" id="studentSearch" placeholder="Search by name, mobile, email, NID..." style="width: 100%;">
                         </div>
                     </div>
-                    <select id="courseFilter" class="form-select" style="width: 250px;">
+                    <select id="courseFilter" class="form-select" style="width: 200px;">
                         <option value="">All Courses</option>
                         ${getUniqueCourses().map(course => `<option value="${course}">${course}</option>`).join('')}
                     </select>
-                    <select id="statusFilter" class="form-select" style="width: 150px;">
-                        <option value="">All Status</option>
+                    <select id="batchFilter" class="form-select" style="width: 150px;">
+                        <option value="">All Batches</option>
+                        ${AppState.batches.map(batch => `<option value="${batch}">${batch}</option>`).join('')}
+                    </select>
+                    <select id="genderFilter" class="form-select" style="width: 120px;">
+                        <option value="">Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <select id="statusFilter" class="form-select" style="width: 120px;">
+                        <option value="">Status</option>
                         <option value="Active">Active</option>
                         <option value="Completed">Completed</option>
                         <option value="Inactive">Inactive</option>
                     </select>
+                    
+                    <div style="display: flex; gap: var(--spacing-xs); margin-left: auto;">
+                        <button class="btn-secondary" onclick="exportStudentsPDF()" title="Download PDF">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button class="btn-secondary" onclick="exportStudentsExcel()" title="Download Excel">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -76,10 +94,13 @@ function loadStudentsPage() {
                 <div class="stat-card error">
                     <div class="stat-card-content">
                         <div class="stat-info">
-                            <h3>Pending Certificates</h3>
-                            <div class="stat-value" id="pendingCertCount">${getPendingCertificates()}</div>
+                            <h3>Male / Female</h3>
+                            <div class="stat-value" id="genderRatio">
+                                <span style="color: #3498db;">${students.filter(s => s.gender === 'Male').length}</span> / 
+                                <span style="color: #e84393;">${students.filter(s => s.gender === 'Female').length}</span>
+                            </div>
                         </div>
-                        <div class="stat-icon"><i class="fas fa-certificate"></i></div>
+                        <div class="stat-icon"><i class="fas fa-venus-mars"></i></div>
                     </div>
                 </div>
             </div>
@@ -112,7 +133,7 @@ function renderStudentsTable(students) {
     }
 
     return `
-        <table>
+        <table id="studentsDataTable">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -167,6 +188,8 @@ function renderStudentsTable(students) {
 function initializeStudentFilters() {
     const searchInput = document.getElementById('studentSearch');
     const courseFilter = document.getElementById('courseFilter');
+    const batchFilter = document.getElementById('batchFilter');
+    const genderFilter = document.getElementById('genderFilter');
     const statusFilter = document.getElementById('statusFilter');
 
     if (searchInput) {
@@ -175,19 +198,30 @@ function initializeStudentFilters() {
     if (courseFilter) {
         courseFilter.addEventListener('change', filterStudents);
     }
+    if (batchFilter) {
+        batchFilter.addEventListener('change', filterStudents);
+    }
+    if (genderFilter) {
+        genderFilter.addEventListener('change', filterStudents);
+    }
     if (statusFilter) {
         statusFilter.addEventListener('change', filterStudents);
     }
 }
 
+// Store filtered students for export
+let filteredStudentsList = [];
+
 function filterStudents() {
     const searchQuery = document.getElementById('studentSearch')?.value.toLowerCase() || '';
     const courseFilter = document.getElementById('courseFilter')?.value || '';
+    const batchFilter = document.getElementById('batchFilter')?.value || '';
+    const genderFilter = document.getElementById('genderFilter')?.value || '';
     const statusFilter = document.getElementById('statusFilter')?.value || '';
 
     let filtered = AppState.students;
 
-    // Apply search filter
+    // Apply filters
     if (searchQuery) {
         filtered = filtered.filter(student => {
             return (
@@ -201,15 +235,20 @@ function filterStudents() {
         });
     }
 
-    // Apply course filter
     if (courseFilter) {
         filtered = filtered.filter(student => student.course === courseFilter);
     }
-
-    // Apply status filter
+    if (batchFilter) {
+        filtered = filtered.filter(student => student.batch === batchFilter);
+    }
+    if (genderFilter) {
+        filtered = filtered.filter(student => student.gender === genderFilter);
+    }
     if (statusFilter) {
         filtered = filtered.filter(student => student.status === statusFilter);
     }
+
+    filteredStudentsList = filtered;
 
     // Update table
     const tableContainer = document.getElementById('studentsTableContainer');
@@ -218,7 +257,21 @@ function filterStudents() {
     }
 
     // Update counts
-    document.getElementById('totalStudentsCount').textContent = filtered.length;
+    const totalEl = document.getElementById('totalStudentsCount');
+    const activeEl = document.getElementById('activeStudentsCount');
+    const ratioEl = document.getElementById('genderRatio');
+
+    if (totalEl) totalEl.textContent = filtered.length;
+    if (activeEl) activeEl.textContent = filtered.filter(s => s.status === 'Active').length;
+
+    if (ratioEl) {
+        const males = filtered.filter(s => s.gender === 'Male').length;
+        const females = filtered.filter(s => s.gender === 'Female').length;
+        ratioEl.innerHTML = `
+            <span style="color: #3498db;">${males}</span> / 
+            <span style="color: #e84393;">${females}</span>
+        `;
+    }
 }
 
 function openAddStudentModal() {
@@ -233,8 +286,8 @@ function initializeStudentForm() {
     form.innerHTML = `
         <div class="form-grid">
             <div class="form-group">
-                <label>Name (Bangla) <span class="required">*</span></label>
-                <input type="text" name="nameBangla" class="form-input bengali-text" required>
+                <label>Name (Bangla)</label>
+                <input type="text" name="nameBangla" class="form-input bengali-text">
             </div>
             <div class="form-group">
                 <label>Name (English) <span class="required">*</span></label>
@@ -256,6 +309,45 @@ function initializeStudentForm() {
                 <label>Email</label>
                 <input type="email" name="email" class="form-input">
             </div>
+
+            <!-- Financial Information (Moved Up) -->
+            <div style="grid-column: 1 / -1; margin: var(--spacing-sm) 0; padding: var(--spacing-md); border-radius: var(--radius-md); background: rgba(0, 217, 255, 0.05); border: 1px solid rgba(0, 217, 255, 0.1);">
+                <h3 style="font-size: 1rem; color: var(--primary-color); margin-bottom: var(--spacing-sm); display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Financial Information
+                </h3>
+                <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="form-group">
+                        <label>Total Payment (৳) <span class="required">*</span></label>
+                        <input type="number" name="totalPayment" id="totalPaymentInput" class="form-input" required min="0" step="0.01" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Paid Amount (৳) <span class="required">*</span></label>
+                        <input type="number" name="paidAmount" id="paidAmountInput" class="form-input" required min="0" step="0.01" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Due Amount (৳)</label>
+                        <input type="number" name="dueAmount" id="dueAmountInput" class="form-input" readonly value="0" style="background: rgba(255,255,255,0.02); font-weight: 700; color: var(--primary-color);">
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method <span class="required">*</span></label>
+                        <select name="paymentMethod" class="form-select" required>
+                            <option value="Cash">Cash</option>
+                            <optgroup label="Bank Accounts">
+                                ${AppState.accounts.banks.map(bank => `
+                                    <option value="Bank: ${bank.name} (${bank.accountNo})">${bank.name} - ${bank.accountNo}</option>
+                                `).join('')}
+                            </optgroup>
+                            <optgroup label="Mobile Banking">
+                                ${AppState.accounts.mobileBanking.map(acc => `
+                                    <option value="Mobile: ${acc.name} (${acc.accountNo})">${acc.name} - ${acc.accountNo}</option>
+                                `).join('')}
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>NID / Passport No</label>
                 <input type="text" name="nid" class="form-input">
@@ -277,15 +369,31 @@ function initializeStudentForm() {
                 <label>Division</label>
                 <input type="text" name="division" class="form-input">
             </div>
+            <div class="form-group">
+                <label>Enrollment Date <span class="required">*</span></label>
+                <input type="date" name="enrollmentDate" class="form-input" value="${getTodayDate()}" required>
+            </div>
+            <div class="form-group">
+                <label>Gender <span class="required">*</span></label>
+                <select name="gender" class="form-select" required>
+                    <option value="">Select Gender...</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Batch <span class="required">*</span></label>
+                <select name="batch" class="form-select" required>
+                    <option value="">Select Batch...</option>
+                    ${AppState.batches.map(batch => `<option value="${batch}">${batch}</option>`).join('')}
+                </select>
+            </div>
             <div class="form-group" style="grid-column: 1 / -1;">
                 <label>Course <span class="required">*</span></label>
                 <select name="course" class="form-select" required>
                     <option value="">Select Course...</option>
-                    <option value="Caregiving for Toddler And Children">Caregiving for Toddler And Children</option>
-                    <option value="Primary Health Care Level 2">Primary Health Care Level 2</option>
-                    <option value="Caregiving for Elderly Person Level 3">Caregiving for Elderly Person Level 3</option>
-                    <option value="Dementia Caregiver Level 3">Dementia Caregiver Level 3</option>
-                    <option value="Caregiving for Special Need">Caregiving for Special Need</option>
+                    ${AppState.courses.map(course => `<option value="${course}">${course}</option>`).join('')}
                 </select>
             </div>
             <div class="form-group" style="grid-column: 1 / -1;">
@@ -304,6 +412,20 @@ function initializeStudentForm() {
         </div>
     `;
 
+    // Add listeners for due calculation
+    const totalInput = document.getElementById('totalPaymentInput');
+    const paidInput = document.getElementById('paidAmountInput');
+    const dueInput = document.getElementById('dueAmountInput');
+
+    const updateDue = () => {
+        const total = parseFloat(totalInput.value) || 0;
+        const paid = parseFloat(paidInput.value) || 0;
+        dueInput.value = (total - paid).toFixed(2);
+    };
+
+    totalInput.addEventListener('input', updateDue);
+    paidInput.addEventListener('input', updateDue);
+
     form.onsubmit = handleStudentFormSubmit;
 }
 
@@ -311,6 +433,11 @@ function handleStudentFormSubmit(e) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
+    const paidAmount = parseFloat(formData.get('paidAmount')) || 0;
+    const totalPayment = parseFloat(formData.get('totalPayment')) || 0;
+
+    const paymentMethod = formData.get('paymentMethod');
+
     const student = {
         id: generateId(),
         nameBangla: formData.get('nameBangla'),
@@ -324,19 +451,101 @@ function handleStudentFormSubmit(e) {
         district: formData.get('district'),
         division: formData.get('division'),
         course: formData.get('course'),
+        batch: formData.get('batch'),
+        gender: formData.get('gender'),
         address: formData.get('address'),
+        totalPayment: totalPayment,
+        paidAmount: paidAmount,
+        dueAmount: totalPayment - paidAmount,
         registrationDate: new Date().toISOString(),
-        enrollmentDate: new Date().toISOString(),
+        enrollmentDate: formData.get('enrollmentDate') || new Date().toISOString(),
         status: 'Active'
     };
 
     AppState.students.push(student);
+
+    // Synchronize with Finance if paid amount > 0
+    if (paidAmount > 0) {
+        const transaction = {
+            id: generateId(),
+            type: 'income',
+            category: 'Course Fee',
+            amount: paidAmount,
+            paymentMethod: paymentMethod,
+            date: formData.get('enrollmentDate') || getTodayDate(),
+            description: `Course fee for ${student.nameEnglish} - ${student.course}`,
+            studentId: student.id
+        };
+        AppState.transactions.push(transaction);
+
+        // Update corresponding account balance
+        if (paymentMethod === 'Cash') {
+            AppState.accounts.cash += paidAmount;
+        } else if (paymentMethod.startsWith('Bank:')) {
+            const accNoMatch = paymentMethod.match(/\((.*?)\)/);
+            if (accNoMatch) {
+                const accNo = accNoMatch[1];
+                const bank = AppState.accounts.banks.find(b => b.accountNo === accNo);
+                if (bank) bank.balance = (bank.balance || 0) + paidAmount;
+            }
+        } else if (paymentMethod.startsWith('Mobile:')) {
+            const accNoMatch = paymentMethod.match(/\((.*?)\)/);
+            if (accNoMatch) {
+                const accNo = accNoMatch[1];
+                const mobile = AppState.accounts.mobileBanking.find(m => m.accountNo === accNo);
+                if (mobile) mobile.balance = (mobile.balance || 0) + paidAmount;
+            }
+        }
+    }
+
     saveDataToStorage();
 
     closeModal('addStudentModal');
     loadStudentsPage();
     showToast('Student added successfully!', 'success');
 }
+
+// Export functions for students
+function exportStudentsPDF() {
+    const tableElement = document.getElementById('studentsDataTable');
+    if (!tableElement) return;
+
+    // Use the global exportToPDF helper
+    if (typeof exportToPDF === 'function') {
+        exportToPDF('studentsDataTable', 'Wings Fly - Students Report');
+    } else {
+        window.print();
+    }
+}
+
+function exportStudentsExcel() {
+    const data = filteredStudentsList.length > 0 ? filteredStudentsList : AppState.students;
+    if (data.length === 0) {
+        showToast('No data to export', 'warning');
+        return;
+    }
+
+    const exportData = data.map((student, index) => ({
+        'SL': index + 1,
+        'Name (English)': student.nameEnglish,
+        'Name (Bangla)': student.nameBangla,
+        'Mobile': student.mobile,
+        'Course': student.course,
+        'District': student.district,
+        'Enrollment Date': formatDate(student.registrationDate),
+        'Total Payment': student.totalPayment || 0,
+        'Paid': student.paidAmount || 0,
+        'Due': student.dueAmount || 0,
+        'Status': student.status
+    }));
+
+    if (typeof exportToExcel === 'function') {
+        exportToExcel(exportData, 'Wings_Fly_Students_Report');
+    } else {
+        showToast('Excel export helper not found', 'error');
+    }
+}
+
 
 function viewStudentDetails(id) {
     const student = AppState.students.find(s => s.id === id);
